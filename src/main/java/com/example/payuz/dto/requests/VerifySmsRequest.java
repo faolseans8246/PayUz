@@ -6,6 +6,5 @@ import lombok.Data;
 public class VerifySmsRequest {
 
     private String phineNumber;
-
     private String code;
 }

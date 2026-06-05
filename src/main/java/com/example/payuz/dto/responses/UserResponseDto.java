@@ -5,7 +5,6 @@ import com.example.payuz.enums.user.UserStatus;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -18,7 +17,6 @@ public class UserResponseDto {
     private String lastName;
 
     private String phoneNumber;
-
     private boolean phoneVerified;
 
     private UserRole role;
