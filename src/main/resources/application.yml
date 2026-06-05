@@ -1,0 +1,9 @@
+server:
+  port: 2026
+
+spring:
+  application:
+    name: PayUz
+
+  profiles:
+    active: dev
