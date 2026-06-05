@@ -1,0 +1,1 @@
+# FinTech - amaliy loyiha uchun dasturiy ta'minot qismi
