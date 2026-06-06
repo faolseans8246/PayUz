@@ -14,20 +14,21 @@ import java.sql.Timestamp;
 @Data
 @Entity
 @Builder
-@Table(name = "SmsCodes")
+@Table(name = "sms_codes")
 @NoArgsConstructor
 @AllArgsConstructor
 public class SmsCode extends Ids {
 
-    @Column(name = "Phone number")
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "SMS code")
+    @Column(name = "sms_code", nullable = false)
     private String code;
 
-    @Column(nullable = false)
+    @Column(name = "expire_time", nullable = false)
     private Timestamp expireTime;
 
+    @Column(nullable = false)
     @Builder.Default
     private boolean used = false;
 }

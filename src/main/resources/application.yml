@@ -7,3 +7,16 @@ spring:
 
   profiles:
     active: dev
+
+security:
+  jwt:
+    # base64 of 32-byte key (demo only, replace in production)
+    secret: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlBheSBVeiIsImFkbWluIjp0cnVlLCJpYXQiOjE3ODA3MzU2OTMsImV4cCI6MTc4MDczOTI5M30.swlZSGB2ZWQ2hoEZkdkcIg6vVnGaJiaZIjs_sNQBaoE
+    access-expiration-ms: 1800000
+    refresh-expiration-ms: 604800000
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

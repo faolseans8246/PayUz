@@ -6,37 +6,34 @@ import com.example.payuz.index.Ids;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserBase extends Ids {
 
-    @Column(nullable = false, name = "Firstname")
+    @Column(nullable = false, name = "first_name")
     private String firstName;
 
-    @Column(nullable = false, name = "Lastname")
+    @Column(nullable = false, name = "last_name")
     private String lastName;
 
-    @Column(nullable = false, name = "Phone Number", unique = true)
+    @Column(nullable = false, name = "phone_number", unique = true)
     private String phoneNumber;
 
-    @Column(nullable = false, name = "Password")
+    @Column(nullable = false, name = "password")
     private String password;
 
+    @Column(nullable = false, name = "phone_verified")
     private boolean phoneVerified = false;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "role")
     private UserRole role;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "status")
     private UserStatus status;
-
-    private LocalDateTime createDate;
-
-    private LocalDateTime updateDate;
 }

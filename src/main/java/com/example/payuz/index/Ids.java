@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,18 +18,19 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@MappedSuperclass
 public abstract class Ids implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "UUID")
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @CreationTimestamp
-    @Column(name = "Create date")
-    private Timestamp created_at;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Timestamp createdAt;
 
     @UpdateTimestamp
-    @Column(name = "Update date")
-    private Timestamp updated_at;
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
 }
