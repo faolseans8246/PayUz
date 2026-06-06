@@ -9,6 +9,9 @@ import com.example.payuz.entity.SmsCode;
 import com.example.payuz.entity.UserBase;
 import com.example.payuz.enums.user.UserRole;
 import com.example.payuz.enums.user.UserStatus;
+import com.example.payuz.exceptions.AlreadyExistsException;
+import com.example.payuz.exceptions.BadRequestException;
+import com.example.payuz.exceptions.NotFoundException;
 import com.example.payuz.payload.ApiResponse;
 import com.example.payuz.repositories.SmsRepository;
 import com.example.payuz.repositories.UserRepository;
@@ -42,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
     public ApiResponse register(SignupRequest signupRequest) {
 
         if (userRepository.existsByPhoneNumber(signupRequest.getPhoneNumber())) {
-            return new ApiResponse("Bu telefon raqam oldin ro'yxatdan o'tgan", false, null);
+            throw new AlreadyExistsException("Bu telefon raqam oldin ro'yxatdan o'tgan");
         }
 
         UserBase user = new UserBase();
@@ -71,26 +74,18 @@ public class AuthServiceImpl implements AuthService {
     public ApiResponse verifySms(VerifySmsRequest verifySmsRequest) {
 
         SmsCode smsCode = smsRepository.findLatestActiveCode(verifySmsRequest.getPhoneNumber())
-                .orElse(null);
-
-        if (smsCode == null) {
-            return new ApiResponse("Faol SMS kod topilmadi", false, null);
-        }
+                .orElseThrow(() -> new NotFoundException("Faol SMS kod topilmadi"));
 
         if (smsCode.getExpireTime().before(Timestamp.from(Instant.now()))) {
-            return new ApiResponse("SMS kod muddati tugagan", false, null);
+            throw new BadRequestException("SMS kod muddati tugagan");
         }
 
         if (!smsCode.getCode().equals(verifySmsRequest.getCode())) {
-            return new ApiResponse("SMS kod noto'g'ri", false, null);
+            throw new BadRequestException("SMS kod noto'g'ri");
         }
 
         UserBase user = userRepository.findByPhoneNumber(verifySmsRequest.getPhoneNumber())
-                .orElse(null);
-
-        if (user == null) {
-            return new ApiResponse("Foydalanuvchi topilmadi", false, null);
-        }
+                .orElseThrow(() -> new NotFoundException("Foydalanuvchi topilmadi"));
 
         smsCode.setUsed(true);
         user.setPhoneVerified(true);
@@ -112,11 +107,8 @@ public class AuthServiceImpl implements AuthService {
         );
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        UserBase user = userRepository.findByPhoneNumber(userDetails.getUsername()).orElse(null);
-
-        if (user == null) {
-            return new ApiResponse("Foydalanuvchi topilmadi", false, null);
-        }
+        UserBase user = userRepository.findByPhoneNumber(userDetails.getUsername())
+            .orElseThrow(() -> new NotFoundException("Foydalanuvchi topilmadi"));
 
         String accessToken = jwtService.generateAccessToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);

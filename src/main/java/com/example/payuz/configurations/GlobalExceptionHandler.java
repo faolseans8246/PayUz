@@ -1,5 +1,6 @@
 package com.example.payuz.configurations;
 
+import com.example.payuz.exceptions.AppException;
 import com.example.payuz.payload.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<ApiResponse> handleAppException(AppException ex) {
+        return ResponseEntity.status(ex.getStatus())
+                .body(new ApiResponse(ex.getMessage(), false, null));
+    }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse> handleBadCredentials(BadCredentialsException ex) {
