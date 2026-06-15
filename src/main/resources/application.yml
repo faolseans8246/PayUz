@@ -11,7 +11,7 @@ spring:
 security:
   jwt:
     # base64 of 32-byte key (demo only, replace in production)
-    secret: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlBheSBVeiIsImFkbWluIjp0cnVlLCJpYXQiOjE3ODA3MzU2OTMsImV4cCI6MTc4MDczOTI5M30.swlZSGB2ZWQ2hoEZkdkcIg6vVnGaJiaZIjs_sNQBaoE
+    secret: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9xeyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlBheSBVeiIsImFkbWluIjp0cnVlLCJpYXQiOjE3ODA3MzU2OTMsImV4cCI6MTc4MDczOTI5M30xswlZSGB2ZWQ2hoEZkdkcIg6vVnGaJiaZIjsYsNQBaoE
     access-expiration-ms: 1800000
     refresh-expiration-ms: 604800000
 

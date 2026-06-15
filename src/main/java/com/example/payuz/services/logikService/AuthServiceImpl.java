@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
 
         smsRepository.save(smsCode);
 
-        return new ApiResponse("Ro'yxatdan o'tish muvaffaqiyatli. SMS kod: " + smsCode.getCode(), true, null);
+        return new ApiResponse("Ro'yxatdan o'tish muvaffaqiyatli. SMS kod: " + smsCode.getCode(), true, user);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class AuthServiceImpl implements AuthService {
         smsRepository.save(smsCode);
         userRepository.save(user);
 
-        return new ApiResponse("Telefon raqam tasdiqlandi", true, null);
+        return new ApiResponse("Telefon raqam tasdiqlandi", true, verifySmsRequest.getPhoneNumber());
     }
 
     @Override
