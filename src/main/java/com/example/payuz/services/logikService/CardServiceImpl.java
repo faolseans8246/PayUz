@@ -40,11 +40,11 @@ public class CardServiceImpl implements CardService {
         cardBalance.setCardBlocked(false);
 
         CardNotes cardNotes = new CardNotes();
-        cardNotes.setCardNumber(addCardDto.getCardNumber());
-        cardNotes.setCardHolderName(addCardDto.getCardHolderName());
-        cardNotes.setCvv(addCardDto.getCvv());
-        cardNotes.setExpiredDate(addCardDto.getExpiredDate());
-        cardNotes.setCardType(addCardDto.getCardType());
+        cardNotes.setCardNumber(addCardDto.cardNumber());
+        cardNotes.setCardHolderName(addCardDto.cardHolderName());
+        cardNotes.setCvv(addCardDto.cvv());
+        cardNotes.setExpiredDate(addCardDto.expiredDate());
+        cardNotes.setCardType(addCardDto.cardType());
 
         cardNotes.setCardBalance(cardBalance);
         cardNotes.setUserBase(currentUser);
@@ -100,6 +100,35 @@ public class CardServiceImpl implements CardService {
         return new ApiResponse("Karta muvaffaqiyatli o'chirildi!", true, cardNotes);
     }
 
+    @Override
+    public ApiResponse demoAddFunds(com.example.payuz.dto.requests.DemoAddFundsDto demoAddFundsDto) {
+
+        // Find card by card number
+        CardNotes cardNotes = cardRepository.findByCardNumber(demoAddFundsDto.cardNumber())
+                .orElseThrow(() -> new NotFoundException("Karta topilmadi!"));
+
+        CardBalance cardBalance = cardNotes.getCardBalance();
+        if (cardBalance == null) {
+            cardBalance = new CardBalance();
+            cardBalance.setBalance(BigDecimal.ZERO);
+            cardBalance.setCardBlocked(false);
+            cardNotes.setCardBalance(cardBalance);
+        }
+
+        if (demoAddFundsDto.amount() == null) {
+            return new ApiResponse("Miqdor berilmagan", false, null);
+        }
+
+        BigDecimal current = cardBalance.getBalance() == null ? BigDecimal.ZERO : cardBalance.getBalance();
+        BigDecimal updated = current.add(demoAddFundsDto.amount());
+
+        cardBalance.setBalance(updated);
+
+        CardNotes saved = cardRepository.save(cardNotes);
+
+        return new ApiResponse("Demo mablag' muvaffaqiyatli qo'shildi", true, saved.getCardBalance());
+    }
+
 
     // Cartaning foydalanuvchi qismini shaqkllantirib chiqish qismi
     private UserBase getCurrentUser() {
@@ -112,18 +141,19 @@ public class CardServiceImpl implements CardService {
     }
 
     private CardNotesDto toDto(CardNotes cardNotes) {
+        CardBalanceDto balanceDto = new CardBalanceDto(
+            cardNotes.getCardBalance().getBalance(),
+            cardNotes.getCardBalance().isCardBlocked()
+        );
 
-        CardBalanceDto balanceDto = new CardBalanceDto();
-        balanceDto.setBalance(cardNotes.getCardBalance().getBalance());
-        balanceDto.setCardBlocked(cardNotes.getCardBalance().isCardBlocked());
-
-        CardNotesDto cardNotesDto = new CardNotesDto();
-        cardNotesDto.setCardNumber(cardNotes.getCardNumber());
-        cardNotesDto.setCardHolderName(cardNotes.getCardHolderName());
-        cardNotesDto.setExpiredDate(cardNotes.getExpiredDate());
-        cardNotesDto.setCvv(cardNotes.getCvv());
-        cardNotesDto.setCardType(cardNotes.getCardType());
-        cardNotesDto.setCardBalanceDto(balanceDto);
+        CardNotesDto cardNotesDto = new CardNotesDto(
+            cardNotes.getCardNumber(),
+            cardNotes.getExpiredDate(),
+            cardNotes.getCardHolderName(),
+            cardNotes.getCvv(),
+            cardNotes.getCardType(),
+            balanceDto
+        );
 
         return cardNotesDto;
     }

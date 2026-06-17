@@ -44,15 +44,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ApiResponse register(SignupRequest signupRequest) {
 
-        if (userRepository.existsByPhoneNumber(signupRequest.getPhoneNumber())) {
+        if (userRepository.existsByPhoneNumber(signupRequest.phoneNumber())) {
             throw new AlreadyExistsException("Bu telefon raqam oldin ro'yxatdan o'tgan");
         }
 
         UserBase user = new UserBase();
-        user.setFirstName(signupRequest.getFirstName());
-        user.setLastName(signupRequest.getLastName());
-        user.setPhoneNumber(signupRequest.getPhoneNumber());
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        user.setFirstName(signupRequest.firstName());
+        user.setLastName(signupRequest.lastName());
+        user.setPhoneNumber(signupRequest.phoneNumber());
+        user.setPassword(passwordEncoder.encode(signupRequest.password()));
         user.setRole(UserRole.USER);
         user.setStatus(UserStatus.PENDING);
         user.setPhoneVerified(false);
@@ -73,18 +73,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ApiResponse verifySms(VerifySmsRequest verifySmsRequest) {
 
-        SmsCode smsCode = smsRepository.findLatestActiveCode(verifySmsRequest.getPhoneNumber())
+        SmsCode smsCode = smsRepository.findLatestActiveCode(verifySmsRequest.phoneNumber())
                 .orElseThrow(() -> new NotFoundException("Faol SMS kod topilmadi"));
 
         if (smsCode.getExpireTime().before(Timestamp.from(Instant.now()))) {
             throw new BadRequestException("SMS kod muddati tugagan");
         }
 
-        if (!smsCode.getCode().equals(verifySmsRequest.getCode())) {
+        if (!smsCode.getCode().equals(verifySmsRequest.code())) {
             throw new BadRequestException("SMS kod noto'g'ri");
         }
 
-        UserBase user = userRepository.findByPhoneNumber(verifySmsRequest.getPhoneNumber())
+        UserBase user = userRepository.findByPhoneNumber(verifySmsRequest.phoneNumber())
                 .orElseThrow(() -> new NotFoundException("Foydalanuvchi topilmadi"));
 
         smsCode.setUsed(true);
@@ -94,15 +94,15 @@ public class AuthServiceImpl implements AuthService {
         smsRepository.save(smsCode);
         userRepository.save(user);
 
-        return new ApiResponse("Telefon raqam tasdiqlandi", true, verifySmsRequest.getPhoneNumber());
+        return new ApiResponse("Telefon raqam tasdiqlandi", true, verifySmsRequest.phoneNumber());
     }
 
     @Override
     public ApiResponse login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getPhoneNumber(),
-                        loginRequest.getPassword()
+                loginRequest.phoneNumber(),
+                loginRequest.password()
                 )
         );
 
@@ -113,21 +113,21 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtService.generateAccessToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
 
+        UserResponseDto userResponseDto = new UserResponseDto(
+            user.getId(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getPhoneNumber(),
+            user.isPhoneVerified(),
+            user.getRole(),
+            user.getStatus()
+        );
+
         AuthResponse authResponse = AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .userResponseDto(
-                        UserResponseDto.builder()
-                                .id(user.getId())
-                                .firstName(user.getFirstName())
-                                .lastName(user.getLastName())
-                                .phoneNumber(user.getPhoneNumber())
-                                .phoneVerified(user.isPhoneVerified())
-                                .role(user.getRole())
-                                .status(user.getStatus())
-                                .build()
-                )
-                .build();
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .userResponseDto(userResponseDto)
+            .build();
 
         return new ApiResponse("Muvaffaqiyatli login", true, authResponse);
     }

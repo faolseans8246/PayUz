@@ -11,4 +11,5 @@ public interface CardService {
     ApiResponse getMyCards();
     ApiResponse getCardById(UUID cardId);
     ApiResponse deleteCardById(UUID cardId);
+    ApiResponse demoAddFunds(com.example.payuz.dto.requests.DemoAddFundsDto demoAddFundsDto);
 }

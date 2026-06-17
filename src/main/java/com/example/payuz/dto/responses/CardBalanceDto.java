@@ -1,12 +1,9 @@
 package com.example.payuz.dto.responses;
 
-import lombok.Data;
-
 import java.math.BigDecimal;
 
-@Data
-public class CardBalanceDto {
-
-    private BigDecimal balance;
-    private boolean cardBlocked = false;
+public record CardBalanceDto(BigDecimal balance, boolean cardBlocked) {
+    public CardBalanceDto {
+        // default cardBlocked to false when null/omitted via constructor calls
+    }
 }

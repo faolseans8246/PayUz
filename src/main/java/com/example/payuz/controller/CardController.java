@@ -3,6 +3,7 @@ package com.example.payuz.controller;
 import com.example.payuz.dto.requests.AddCardDto;
 import com.example.payuz.payload.ApiResponse;
 import com.example.payuz.services.CardService;
+import com.example.payuz.dto.requests.DemoAddFundsDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,13 @@ public class CardController {
     @DeleteMapping("/deleteCard/{ids}")
     public ResponseEntity<ApiResponse> deleteCardById(@PathVariable UUID ids) {
         ApiResponse apiResponse = cardService.deleteCardById(ids);
+
+        return ResponseEntity.status(apiResponse.isSuccess() ? 200 : 400).body(apiResponse);
+    }
+
+    @PostMapping("/demo/addFunds")
+    public ResponseEntity<ApiResponse> demoAddFunds(@RequestBody DemoAddFundsDto demoAddFundsDto) {
+        ApiResponse apiResponse = cardService.demoAddFunds(demoAddFundsDto);
 
         return ResponseEntity.status(apiResponse.isSuccess() ? 200 : 400).body(apiResponse);
     }

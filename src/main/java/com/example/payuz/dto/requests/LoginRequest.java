@@ -1,14 +1,8 @@
 package com.example.payuz.dto.requests;
 
-import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 
-@Data
-public class LoginRequest {
-
-    @NotBlank(message = "Phone number is required")
-    private String phoneNumber;
-
-    @NotBlank(message = "Password is required")
-    private String password;
-}
+public record LoginRequest(
+        @NotBlank(message = "Phone number is required") String phoneNumber,
+        @NotBlank(message = "Password is required") String password
+) {}

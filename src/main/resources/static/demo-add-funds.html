@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Demo Add Funds</title>
+</head>
+<body>
+  <h1>Demo: Kartaga mablag' qo'shish</h1>
+  <form id="demoForm">
+    <label>Card Number: <input type="text" id="cardNumber" required></label><br><br>
+    <label>Amount: <input type="number" id="amount" step="0.01" required></label><br><br>
+    <button type="submit">Add Funds</button>
+  </form>
+  <pre id="result"></pre>
+
+  <script>
+    document.getElementById('demoForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const cardNumber = document.getElementById('cardNumber').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+
+      if (!cardNumber || !amount) return;
+
+      const payload = {
+        cardNumber: cardNumber,
+        amount: parseFloat(amount)
+      };
+
+      try {
+        const res = await fetch('/api/cards/demo/addFunds', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('result').textContent = String(err);
+      }
+    });
+  </script>
+</body>
+</html>
